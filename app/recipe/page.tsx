@@ -18,14 +18,14 @@ export default function RecipesPage() {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">Recipes</h1>
+            <h1 className="text-2xl font-bold mb-4">レシピ一覧</h1>
             <div className="my-3">
                 <ul>
                     {recipes.map((recipe) => (
                         <li key={recipe.id} className="py-2 border-b">
                             <Link
                                 href={`/recipe/${recipe.id}`}
-                                className="me-3 text-sm text-blue-500 px-4 py-1 my-4"
+                                className="me-3 text-gray-500 px-4 py-1 my-4"
                             >
                                 {recipe.title}
                             </Link>

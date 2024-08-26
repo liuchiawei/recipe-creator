@@ -1,31 +1,44 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
-    const data = await req.json();
-    const { title, description, ingredients } = data;
+export async function PUT(request: Request, { params }: { params: { id: string } }) {
+    try {
+        const recipeId = Number(params.id);
+        const { title, description, ingredients, steps } = await request.json();
 
-    const updatedRecipe = await prisma.recipe.update({
-        where: { id: Number(params.id) },
-        data: {
-            title,
-            description,
-        },
-    });
+        // 既存の材料と手順を削除してから再作成する
+        await prisma.ingredient.deleteMany({
+            where: { recipeId },
+        });
 
-    await prisma.ingredient.deleteMany({
-        where: { recipeId: Number(params.id) },
-    });
+        await prisma.step.deleteMany({
+            where: { recipeId },
+        });
 
-    for (const ingredient of ingredients) {
-        await prisma.ingredient.create({
+        // レシピの更新
+        const updatedRecipe = await prisma.recipe.update({
+            where: { id: recipeId },
             data: {
-                name: ingredient.name,
-                quantity: ingredient.quantity,
-                recipeId: updatedRecipe.id,
+                title,
+                description,
+                ingredients: {
+                    create: ingredients.map((ingredient: { name: string; quantity: string }) => ({
+                        name: ingredient.name,
+                        quantity: ingredient.quantity,
+                    })),
+                },
+                steps: {
+                    create: steps.map((step: { instruction: string }, index: number) => ({
+                        stepNumber: index + 1,
+                        instruction: step.instruction,
+                    })),
+                },
             },
         });
-    }
 
-    return NextResponse.json(updatedRecipe);
+        return NextResponse.json({ success: true, recipe: updatedRecipe });
+    } catch (error) {
+        console.error('Error updating recipe:', error);
+        return NextResponse.json({ error: 'Failed to update recipe' }, { status: 500 });
+    }
 }
