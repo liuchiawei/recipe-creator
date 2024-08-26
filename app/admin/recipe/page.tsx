@@ -23,7 +23,7 @@ export default function RecipesPage() {
                     href="/admin/recipe/new"
                     className="text-sm border border-blue-500 text-blue-500 rounded px-4 py-1 my-4"
                 >
-                    New
+                    追加
                 </Link>
             </div>
             <div className="my-3">
@@ -34,7 +34,7 @@ export default function RecipesPage() {
                                 href={`/admin/recipe/${recipe.id}/edit`}
                                 className="me-3 text-sm text-blue-500 px-4 py-1 my-4"
                             >
-                                Edit
+                                編集
                             </Link>
                             <span className="my-3">{recipe.title}</span>
                         </li>

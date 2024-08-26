@@ -11,6 +11,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
             steps: true,
         },
     });
+    console.log(recipe)
     if (!recipe) {
         return NextResponse.json({ error: 'Recipe not found' });
     }

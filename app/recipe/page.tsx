@@ -8,7 +8,7 @@ export default function RecipesPage() {
 
     useEffect(() => {
         async function fetchRecipes() {
-            const response = await fetch('/api/recipes');
+            const response = await fetch('/api/recipe/get');
             const data = await response.json();
             setRecipes(data);
         }

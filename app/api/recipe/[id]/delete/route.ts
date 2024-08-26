@@ -1,11 +1,21 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function POST(request: Request) {
+export async function PUT(request: Request, { params }: { params: { id: string } }) {
     try {
+        const recipeId = Number(params.id);
         const { title, description, ingredients, steps } = await request.json();
 
-        const recipe = await prisma.recipe.create({
+        await prisma.ingredient.deleteMany({
+            where: { recipeId },
+        });
+
+        await prisma.step.deleteMany({
+            where: { recipeId },
+        });
+
+        const updatedRecipe = await prisma.recipe.update({
+            where: { id: recipeId },
             data: {
                 title,
                 description,
@@ -24,9 +34,9 @@ export async function POST(request: Request) {
             },
         });
 
-        return NextResponse.json({ success: true, recipe });
+        return NextResponse.json({ success: true, recipe: updatedRecipe });
     } catch (error) {
-        console.error('Error creating recipe:', error);
-        return NextResponse.json({ error: 'Failed to create recipe' }, { status: 500 });
+        console.error('Error updating recipe:', error);
+        return NextResponse.json({ error: 'Failed to update recipe' }, { status: 500 });
     }
 }

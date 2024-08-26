@@ -9,24 +9,30 @@ export default function NewRecipeForm() {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [ingredients, setIngredients] = useState([{ name: '', quantity: '' }]);
+    const [steps, setSteps] = useState([{ instruction: '' }]);
 
     const addIngredient = () => {
         setIngredients([...ingredients, { name: '', quantity: '' }]);
     };
 
+    const addStep = () => {
+        setSteps([...steps, { instruction: '' }]);
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-    
+
         try {
             await axios.post('/api/recipe/create', {
                 title,
                 description,
                 ingredients,
+                steps,
             });
+            router.push('/admin/recipe');
         } catch (error) {
             console.error('Error submitting the recipe:', error);
         }
-        router.push('/admin/recipe');
     };
 
     const handleCancel = async (e: React.FormEvent) => {
@@ -35,11 +41,11 @@ export default function NewRecipeForm() {
     };
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">New Recipe</h1>
+        <div className="container mx-auto p-4 max-w-2xl">
+            <h1 className="text-2xl font-bold mb-4">新しいレシピ</h1>
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                    <label className="block text-sm font-medium mb-2">レシピ名</label>
+                    <label className="block text-sm font-medium mb-2">タイトル</label>
                     <input
                         type="text"
                         className="border border-gray-300 rounded p-2 w-full"
@@ -56,13 +62,21 @@ export default function NewRecipeForm() {
                         onChange={(e) => setDescription(e.target.value)}
                     ></textarea>
                 </div>
+
                 <div className="mb-4">
                     <label className="block text-sm font-medium mb-2">材料</label>
+                    <button
+                        type="button"
+                        className="bg-blue-500 text-sm text-white rounded px-4 py-1"
+                        onClick={addIngredient}
+                    >
+                        材料を追加
+                    </button>
                     {ingredients.map((ingredient, index) => (
                         <div key={index} className="mb-2 flex">
                             <input
                                 type="text"
-                                placeholder="Ingredient"
+                                placeholder="材料"
                                 className="border border-gray-300 rounded p-2 w-full mr-2"
                                 value={ingredient.name}
                                 onChange={(e) =>
@@ -90,18 +104,40 @@ export default function NewRecipeForm() {
                             />
                         </div>
                     ))}
+                </div>
+
+                <div className="mb-4">
+                    <label className="block text-sm font-medium mb-2">手順</label>
                     <button
                         type="button"
-                        className="bg-blue-500 text-white rounded px-4 py-2 mt-2"
-                        onClick={addIngredient}
+                        className="bg-blue-500 text-sm text-white rounded px-4 py-1"
+                        onClick={addStep}
                     >
-                        材料追加
+                        手順を追加
                     </button>
+                    {steps.map((step, index) => (
+                        <div key={index} className="mb-2 flex">
+                            <textarea
+                                placeholder={`手順 ${index + 1}`}
+                                className="border border-gray-300 rounded p-2 w-full"
+                                value={step.instruction}
+                                onChange={(e) =>
+                                    setSteps(
+                                        steps.map((s, i) =>
+                                            i === index ? { ...s, instruction: e.target.value } : s
+                                        )
+                                    )
+                                }
+                                required
+                            />
+                        </div>
+                    ))}
                 </div>
+
                 <div className="flex justify-between">
                     <button
                         type="submit"
-                        className="me-2 bg-green-500 text-white rounded px-4 py-2"
+                        className="bg-blue-500 text-white rounded px-4 py-2"
                     >
                         保存
                     </button>

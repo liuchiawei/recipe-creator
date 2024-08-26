@@ -5,30 +5,34 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
 interface Ingredient {
+    id?: number;
     name: string;
     quantity: string;
 }
 
+interface Step {
+    id?: number;
+    instruction: string;
+}
+
 export default function EditRecipeForm({ recipeId }: { recipeId: string }) {
     const router = useRouter();
-    const [recipe , setRecipe] = useState<Recipe>();
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
+    const [recipe, setRecipe] = useState<Recipe | null>(null);
     const [ingredients, setIngredients] = useState<Ingredient[]>([{ name: '', quantity: '' }]);
+    const [steps, setSteps] = useState<Step[]>([{ instruction: '' }]);
 
     useEffect(() => {
         async function fetchRecipe() {
             const response = await axios.get(`/api/recipe/${recipeId}`);
             if (response.data.error) {
-                router.push('/admin/recipe')
+                router.push('/admin/recipe');
                 return;
             }
 
             const recipe = response.data;
-            console.log(recipe)
-
-            setRecipe(recipe)
-            setIngredients(recipe?.ingredients)
+            setRecipe(recipe);
+            setIngredients(recipe.ingredients);
+            setSteps(recipe.steps);
         }
 
         fetchRecipe();
@@ -38,22 +42,38 @@ export default function EditRecipeForm({ recipeId }: { recipeId: string }) {
         setIngredients([...ingredients, { name: '', quantity: '' }]);
     };
 
+    const addStep = () => {
+        setSteps([...steps, { instruction: '' }]);
+    };
+
     const removeIngredient = (index: number) => {
         setIngredients(ingredients.filter((_, i) => i !== index));
+    };
+
+    const removeStep = (index: number) => {
+        setSteps(steps.filter((_, i) => i !== index));
+    };
+
+    const handleRecipeChange = (key: keyof Recipe, value: string) => {
+        setRecipe(prevRecipe => {
+            if (!prevRecipe) return null;
+            return {
+                ...prevRecipe,
+                [key]: value,
+            };
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        await fetch(`/api/recipe/${recipeId}/update`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ title, description, ingredients }),
+        await axios.put(`/api/recipe/${recipeId}/update`, {
+            ...recipe,
+            ingredients,
+            steps,
         });
 
-        router.push('/recipe');
+        router.push('/admin/recipe');
     };
 
     const handleCancel = (e: React.FormEvent) => {
@@ -61,19 +81,24 @@ export default function EditRecipeForm({ recipeId }: { recipeId: string }) {
         router.push('/admin/recipe');
     };
 
+    const handleDelete = async () => {
+        const confirmDelete = confirm('このレシピを削除しますか？');
+        if (confirmDelete) {
+            await axios.delete(`/api/recipe/${recipeId}`);
+            router.push('/admin/recipe');
+        }
+    };
+
     return (
         <div className="container mx-auto p-4 max-w-2xl">
-            <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">{title}</h1>
-            <p className="text-lg text-gray-600 mb-4 text-center">{description}</p>
-
             <form onSubmit={handleSubmit}>
                 <div className="mb-8">
                     <label className="block text-sm font-medium text-gray-700 mb-2">タイトル</label>
                     <input
                         type="text"
                         className="border border-gray-300 rounded p-3 w-full"
-                        value={recipe?.title}
-                        onChange={(e) => setTitle(e.target.value)}
+                        value={recipe?.title || ''}
+                        onChange={(e) => handleRecipeChange('title', e.target.value)}
                         required
                     />
                 </div>
@@ -82,8 +107,8 @@ export default function EditRecipeForm({ recipeId }: { recipeId: string }) {
                     <label className="block text-sm font-medium text-gray-700 mb-2">説明</label>
                     <textarea
                         className="border border-gray-300 rounded p-3 w-full"
-                        value={recipe?.description}
-                        onChange={(e) => setDescription(e.target.value)}
+                        value={recipe?.description || ''}
+                        onChange={(e) => handleRecipeChange('description', e.target.value)}
                     ></textarea>
                 </div>
 
@@ -107,7 +132,7 @@ export default function EditRecipeForm({ recipeId }: { recipeId: string }) {
                             />
                             <input
                                 type="text"
-                                placeholder="分量"
+                                placeholder="数量"
                                 className="border border-gray-300 rounded p-3 w-40 mr-2"
                                 value={ingredient.quantity}
                                 onChange={(e) =>
@@ -121,7 +146,7 @@ export default function EditRecipeForm({ recipeId }: { recipeId: string }) {
                             />
                             <button
                                 type="button"
-                                className="text-red-500 hover:text-red-700"
+                                className="text-xs text-red-500 hover:text-red-700"
                                 onClick={() => removeIngredient(index)}
                             >
                                 削除
@@ -130,10 +155,45 @@ export default function EditRecipeForm({ recipeId }: { recipeId: string }) {
                     ))}
                     <button
                         type="button"
-                        className="bg-blue-500 text-white rounded px-4 py-2 mt-4"
+                        className="bg-blue-500 text-sm text-white rounded px-4 py-2"
                         onClick={addIngredient}
                     >
                         材料を追加
+                    </button>
+                </div>
+
+                <div className="mb-8">
+                    <h2 className="text-xl font-semibold text-gray-700 mb-4">手順</h2>
+                    {steps.map((step, index) => (
+                        <div key={index} className="flex items-center mb-4">
+                            <textarea
+                                placeholder={`手順 ${index + 1}`}
+                                className="border border-gray-300 rounded p-3 w-full"
+                                value={step.instruction}
+                                onChange={(e) =>
+                                    setSteps(
+                                        steps.map((s, i) =>
+                                            i === index ? { ...s, instruction: e.target.value } : s
+                                        )
+                                    )
+                                }
+                                required
+                            />
+                            <button
+                                type="button"
+                                className="text-xs text-red-500 hover:text-red-700 ml-2"
+                                onClick={() => removeStep(index)}
+                            >
+                                削除
+                            </button>
+                        </div>
+                    ))}
+                    <button
+                        type="button"
+                        className="bg-blue-500 text-sm text-white rounded px-4 py-2"
+                        onClick={addStep}
+                    >
+                        手順を追加
                     </button>
                 </div>
 
@@ -150,6 +210,15 @@ export default function EditRecipeForm({ recipeId }: { recipeId: string }) {
                         onClick={handleCancel}
                     >
                         戻る
+                    </button>
+                </div>
+                <div className="my-5 flex justify-end">
+                    <button
+                        type="button"
+                        className="bg-red-500 text-white rounded px-4 py-2"
+                        onClick={handleDelete}
+                    >
+                        削除
                     </button>
                 </div>
             </form>
