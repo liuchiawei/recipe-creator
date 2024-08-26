@@ -1,42 +1,21 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+    const id = Number(params.id);
+    console.log(id)
+
+    if (isNaN(id)) {
+        return NextResponse.json({ error: 'Invalid recipe ID' }, { status: 400 });
+    }
+
     try {
-        const recipeId = Number(params.id);
-        const { title, description, ingredients, steps } = await request.json();
-
-        await prisma.ingredient.deleteMany({
-            where: { recipeId },
+        await prisma.recipe.delete({
+            where: { id: id },
         });
 
-        await prisma.step.deleteMany({
-            where: { recipeId },
-        });
-
-        const updatedRecipe = await prisma.recipe.update({
-            where: { id: recipeId },
-            data: {
-                title,
-                description,
-                ingredients: {
-                    create: ingredients.map((ingredient: { name: string; quantity: string }) => ({
-                        name: ingredient.name,
-                        quantity: ingredient.quantity,
-                    })),
-                },
-                steps: {
-                    create: steps.map((step: { instruction: string }, index: number) => ({
-                        stepNumber: index + 1,
-                        instruction: step.instruction,
-                    })),
-                },
-            },
-        });
-
-        return NextResponse.json({ success: true, recipe: updatedRecipe });
+        return NextResponse.json({ success: true });
     } catch (error) {
-        console.error('Error updating recipe:', error);
-        return NextResponse.json({ error: 'Failed to update recipe' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to delete recipe' }, { status: 500 });
     }
 }

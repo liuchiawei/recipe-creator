@@ -3,12 +3,19 @@ import prisma from '@/lib/prisma';
 
 export async function POST(request: Request) {
     try {
-        const { title, description, ingredients, steps } = await request.json();
+        const { recipe, ingredients, steps } = await request.json();
 
-        const recipe = await prisma.recipe.create({
+        console.log(recipe)
+        console.log(ingredients)
+        console.log(steps)
+        if (!recipe) {
+            return NextResponse.json({ success: false, });
+        }
+
+        const newRecipe = await prisma.recipe.create({
             data: {
-                title,
-                description,
+                title: recipe.title,
+                description: recipe.description,
                 ingredients: {
                     create: ingredients.map((ingredient: { name: string; quantity: string }) => ({
                         name: ingredient.name,
@@ -24,7 +31,7 @@ export async function POST(request: Request) {
             },
         });
 
-        return NextResponse.json({ success: true, recipe });
+        return NextResponse.json({ success: true, newRecipe });
     } catch (error) {
         console.error('Error creating recipe:', error);
         return NextResponse.json({ error: 'Failed to create recipe' }, { status: 500 });

@@ -4,32 +4,53 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+const initRecipe:Recipe = {
+    id: 0,
+    title: "",
+    description: "",
+    ingredients: [],
+    steps: [],
+}
+
 export default function NewRecipeForm() {
     const router = useRouter();
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [ingredients, setIngredients] = useState([{ name: '', quantity: '' }]);
-    const [steps, setSteps] = useState([{ instruction: '' }]);
+    const [recipe, setRecipe] = useState<Recipe>(initRecipe);
+    const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+    const [steps, setSteps] = useState<Step[]>([]);
 
     const addIngredient = () => {
-        setIngredients([...ingredients, { name: '', quantity: '' }]);
+        setIngredients([...ingredients, { id: 0, name: '', quantity: '' }]);
     };
 
     const addStep = () => {
-        setSteps([...steps, { instruction: '' }]);
+        setSteps([...steps, { id: 0, stepNumber: 0, instruction: '' }]);
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        console.log("name", name)
+        console.log("value:", value)
+        setRecipe(prevRecipe => {
+            return {
+                ...prevRecipe,
+                [name]: value,
+            };
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        console.log("Recipe:", recipe)
         try {
-            await axios.post('/api/recipe/create', {
-                title,
-                description,
+            const response = await axios.post('/api/recipe/create', {
+                recipe,
                 ingredients,
                 steps,
             });
-            router.push('/admin/recipe');
+            if (response.data.success) {
+                router.push('/admin/recipe');
+            }
         } catch (error) {
             console.error('Error submitting the recipe:', error);
         }
@@ -47,19 +68,21 @@ export default function NewRecipeForm() {
                 <div className="mb-4">
                     <label className="block text-sm font-medium mb-2">タイトル</label>
                     <input
+                        name="title"
                         type="text"
                         className="border border-gray-300 rounded p-2 w-full"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
+                        value={recipe?.title}
+                        onChange={handleInputChange}
                         required
                     />
                 </div>
                 <div className="mb-4">
                     <label className="block text-sm font-medium mb-2">説明</label>
                     <textarea
+                        name="description"
                         className="border border-gray-300 rounded p-2 w-full"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
+                        value={recipe?.description}
+                        onChange={handleInputChange}
                     ></textarea>
                 </div>
 

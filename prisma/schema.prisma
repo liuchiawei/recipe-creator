@@ -22,7 +22,7 @@ model Ingredient {
     name     String
     quantity String
     recipeId Int
-    recipe   Recipe @relation(fields: [recipeId], references: [id])
+    recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
     @@map("ingredients")
 }
@@ -32,7 +32,7 @@ model Step {
     stepNumber  Int
     instruction String
     recipeId    Int
-    recipe      Recipe @relation(fields: [recipeId], references: [id])
+    recipe      Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
     @@unique([recipeId, stepNumber])
     @@map("steps")

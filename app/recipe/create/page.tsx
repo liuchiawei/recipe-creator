@@ -1,11 +1,12 @@
 'use client'
 
 import React, { useState, useRef } from 'react';
-import AiPlanForm from '@/app/components/AiRecipeForm';
-import AiPlanList from '@/app/components/AiRecipeList';
+import AiRecipeForm from '@/app/components/AiRecipeForm';
 import axios from 'axios';
 import { useLoading } from '@/app/context/LoadingContext';
 import { useRouter } from 'next/navigation';
+import IngredientList from '@/app/components/IngredientList';
+import StepList from '@/app/components/StepList';
 
 const PlanCreatePage: React.FC = () => {
     const router = useRouter();
@@ -13,22 +14,13 @@ const PlanCreatePage: React.FC = () => {
     const listRef = useRef<HTMLDivElement>(null);
 
     const [recipe, setRecipe] = useState<Recipe>();
-    const [ingredients, setIngredients] = useState<Ingredient[]>();
-    const [steps, setSteps] = useState<Step[]>();
 
     const onAiCreate = async (recipe: Recipe) => {
         try {
             // setLoading(true);
             const response = await axios.post('/api/ai/create', recipe);
             console.log(response.data)
-
-            const ingredients = response.data.ingredients;
-            setIngredients(ingredients);
-
-            const steps = response.data.steps;
-            setSteps(steps);
-
-            setRecipe(recipe);
+            setRecipe(response.data);
         } catch (error) {
             console.error('Error creating recipe:', error);
         } finally {
@@ -43,6 +35,27 @@ const PlanCreatePage: React.FC = () => {
         router.push('/');
     }
 
+    const handleSave = async () => {
+        if (!recipe) return;
+        try {
+            // setLoading(true);
+            const saveResponse = await axios.post('/api/recipe/create',
+                {
+                    recipe: recipe,
+                    ingredients: recipe.ingredients,
+                    steps: recipe.steps,
+                }
+            );
+            if (saveResponse) {
+                onSave();
+            }
+        } catch (error) {
+            console.error('Error saving travel plan:', error);
+        } finally {
+            // setLoading(false);
+        }
+    };
+
     const onSave = async () => {
         router.push('/');
     };
@@ -50,18 +63,29 @@ const PlanCreatePage: React.FC = () => {
     return (
         <div className="pb-20">
             <h1 className="text-center text-3xl p-3">レシピクリエーター</h1>
-            <AiPlanForm
+            <AiRecipeForm
                 onAiCreate={onAiCreate}
                 onCancel={onCancel}
             />
             <div ref={listRef}>
-                {recipe && ingredients && steps &&
-                    <AiPlanList
-                        recipe={recipe}
-                        ingredients={ingredients}
-                        steps={steps}
-                        onSave={onSave}
-                    />
+                {recipe &&
+                    <div className="my-5">
+                        <h1 className="py-5 text-3xl font-bold mb-6 text-center text-gray-800">{recipe.title}</h1>
+                        <p className="text-lg text-gray-600 mb-4">{recipe.description}</p>
+
+                        <IngredientList ingredients={recipe.ingredients} />
+                        <StepList steps={recipe.steps} />
+                        <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg py-4">
+                            <div className="text-center">
+                                <button
+                                    onClick={handleSave}
+                                    className="py-2 px-4 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                                >
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 }
             </div>
         </div>

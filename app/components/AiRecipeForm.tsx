@@ -26,7 +26,6 @@ const AiRecipeForm: React.FC<TravelFormProps> = ({ onAiCreate, onCancel, editRec
         return Object.keys(newErrors).length === 0;
     };
 
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setRecipe(prev => ({

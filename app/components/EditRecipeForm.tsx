@@ -84,7 +84,7 @@ export default function EditRecipeForm({ recipeId }: { recipeId: string }) {
     const handleDelete = async () => {
         const confirmDelete = confirm('このレシピを削除しますか？');
         if (confirmDelete) {
-            await axios.delete(`/api/recipe/${recipeId}`);
+            await axios.delete(`/api/recipe/${recipeId}/delete`);
             router.push('/admin/recipe');
         }
     };
