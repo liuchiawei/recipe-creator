@@ -15,10 +15,9 @@ const PlanCreatePage: React.FC = () => {
 
     const [recipe, setRecipe] = useState<Recipe>();
 
-    const onAiCreate = async (recipe: Recipe) => {
+    const onAiCreate = async (order: Order) => {
         try {
-            // setLoading(true);
-            const response = await axios.post('/api/ai/create', recipe);
+            const response = await axios.post('/api/ai/create', order);
             console.log(response.data)
             setRecipe(response.data);
         } catch (error) {

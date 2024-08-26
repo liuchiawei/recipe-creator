@@ -3,9 +3,9 @@ import { CreateRecipe } from '@/app/services/AiRecipe';
 
 export async function POST(req: NextRequest) {
     try {
-        const recipe = await req.json();
-        const aiRecipe = await CreateRecipe(recipe);
-        console.log("recipe:", recipe);
+        const order = await req.json();
+        const aiRecipe = await CreateRecipe(order);
+        console.log("order:", order);
         console.log(aiRecipe);
         if (!aiRecipe) return NextResponse.json({ error: 'Cannot create recipe' });
         return NextResponse.json(aiRecipe);

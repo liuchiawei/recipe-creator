@@ -21,21 +21,21 @@ export async function getTestRecipe() {
     return json;
 }
 
-export async function CreateRecipe(recipe: Recipe) {
+export async function CreateRecipe(order: Order) {
     if (!API_KEY) return;
     try {
         const genAI = new GoogleGenerativeAI(API_KEY);
         const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
         model.generationConfig.maxOutputTokens = 2048;
 
-        const prompt = createPrompt(recipe);
+        const prompt = createPrompt(order);
         console.log(prompt)
 
-        // const result = await model.generateContent(prompt);
-        // var json = JSON.parse(result.response.text());
+        const result = await model.generateContent(prompt);
+        var json = JSON.parse(result.response.text());
 
         // Test JSON;
-        var json = await getTestRecipe();
+        // var json = await getTestRecipe();
         return json;
     } catch (error) {
         return { error: 'Gemini request error.' };
