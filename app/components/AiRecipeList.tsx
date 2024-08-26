@@ -11,12 +11,12 @@ interface AiRecipeListtProps {
 }
 
 const AiRecipeList: React.FC<AiRecipeListtProps> = ({ recipe, ingredients, steps, onSave }) => {
-    const { setLoading } = useLoading();
+    // const { setLoading } = useLoading();
 
     const handleSave = async () => {
         if (!recipe || !ingredients || !steps) return;
         try {
-            setLoading(true);
+            // setLoading(true);
             const saveResponse = await axios.post('/api/ai/save',
                 {
                     recipe: recipe,
@@ -30,7 +30,7 @@ const AiRecipeList: React.FC<AiRecipeListtProps> = ({ recipe, ingredients, steps
         } catch (error) {
             console.error('Error saving travel plan:', error);
         } finally {
-            setLoading(false);
+            // setLoading(false);
         }
     };
 

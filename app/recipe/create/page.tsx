@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 
 const PlanCreatePage: React.FC = () => {
     const router = useRouter();
-    const { setLoading } = useLoading();
+    // const { setLoading } = useLoading();
     const listRef = useRef<HTMLDivElement>(null);
 
     const [recipe, setRecipe] = useState<Recipe>();
@@ -18,7 +18,7 @@ const PlanCreatePage: React.FC = () => {
 
     const onAiCreate = async (recipe: Recipe) => {
         try {
-            setLoading(true);
+            // setLoading(true);
             const response = await axios.post('/api/ai/create', recipe);
             console.log(response.data)
 
@@ -32,7 +32,7 @@ const PlanCreatePage: React.FC = () => {
         } catch (error) {
             console.error('Error creating recipe:', error);
         } finally {
-            setLoading(false);
+            // setLoading(false);
             if (listRef.current) {
                 listRef.current.scrollIntoView({ behavior: 'smooth' });
             }
@@ -55,7 +55,7 @@ const PlanCreatePage: React.FC = () => {
                 onCancel={onCancel}
             />
             <div ref={listRef}>
-                {recipe && ingredients &&
+                {recipe && ingredients && steps &&
                     <AiPlanList
                         recipe={recipe}
                         ingredients={ingredients}
