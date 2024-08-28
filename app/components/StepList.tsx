@@ -11,7 +11,7 @@ interface StepsProps {
 
 export default function StepList({ steps }: StepsProps) {
     return (
-        <>
+        <div className="px-5">
             <h2 className="text-xl font-semibold text-gray-700 mb-4">作り方</h2>
             <ul className="list-none space-y-2">
                 {steps.map((step) => (
@@ -27,6 +27,6 @@ export default function StepList({ steps }: StepsProps) {
                     </li>
                 ))}
             </ul>
-        </>
+        </div>
     );
 }

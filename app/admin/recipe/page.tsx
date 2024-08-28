@@ -42,10 +42,10 @@ export default function RecipesPage() {
                             >
                                 編集
                             </Link>
-                            <span className="my-3">{recipe.title}</span>
                             <span className="mx-3 px-3 py-1 bg-blue-500 text-white text-xs rounded">
                                 {recipe.genre}
                             </span>
+                            <span className="my-3">{recipe.title}</span>
                         </li>
                     ))}
                 </ul>

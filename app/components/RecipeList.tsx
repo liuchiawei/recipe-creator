@@ -11,15 +11,15 @@ const RecipeList: React.FC<RecipeListProps> = ({ recipes }) => {
         <ul>
             {recipes.map((recipe) => (
                 <li key={recipe.id} className="py-2 border-b">
+                    <span className="mx-3 px-3 py-1 bg-blue-500 text-white text-xs rounded">
+                        {recipe.genre}
+                    </span>
                     <Link
                         href={`/recipe/${recipe.id}`}
                         className="me-3 text-gray-500 px-4 py-1 my-4"
                     >
                         {recipe.title}
                     </Link>
-                    <span className="mx-3 px-3 py-1 bg-blue-500 text-white text-xs rounded">
-                        {recipe.genre}
-                    </span>
                 </li>
             ))}
         </ul>
