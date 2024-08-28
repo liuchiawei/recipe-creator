@@ -18,7 +18,6 @@ export default function RecipesPage() {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">レシピクリエイター</h1>
             <div className="my-3">
                 <ul>
                     {recipes.map((recipe) => (

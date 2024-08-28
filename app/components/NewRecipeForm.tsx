@@ -40,8 +40,6 @@ export default function NewRecipeForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        console.log("Recipe:", recipe)
         try {
             const response = await axios.post('/api/recipe/create', {
                 recipe,
@@ -62,8 +60,8 @@ export default function NewRecipeForm() {
     };
 
     return (
-        <div className="container mx-auto p-4 max-w-2xl">
-            <h1 className="text-2xl font-bold mb-4">新しいレシピ</h1>
+        <div className="mx-auto p-6 bg-white border rounded-lg space-y-6">
+            <h1 className="text-2xl text-center font-bold mb-4">レシピ作成</h1>
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                     <label className="block text-sm font-medium mb-2">タイトル</label>
@@ -129,7 +127,7 @@ export default function NewRecipeForm() {
                     ))}
                 </div>
 
-                <div className="mb-4">
+                <div className="mb-4 py-5 border-b">
                     <label className="block text-sm font-medium mb-2">手順</label>
                     <button
                         type="button"
@@ -157,17 +155,17 @@ export default function NewRecipeForm() {
                     ))}
                 </div>
 
-                <div className="flex justify-between">
+                <div className="mt-2 flex justify-between">
                     <button
                         type="submit"
-                        className="bg-blue-500 text-white rounded px-4 py-2"
+                        className="bg-blue-500 text-white rounded px-4 py-1"
                     >
                         保存
                     </button>
 
                     <button
                         type="button"
-                        className="border border-blue-500 text-blue-500 rounded px-4 py-2 mt-2"
+                        className="border border-blue-500 text-blue-500 rounded px-4 py-1"
                         onClick={handleCancel}
                     >
                         戻る

@@ -17,13 +17,19 @@ export default function RecipesPage() {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">Recipes</h1>
+            <h1 className="text-2xl text-center font-bold mb-4">レシピ作成</h1>
             <div className="my-3">
                 <Link
                     href="/admin/recipe/new"
-                    className="text-sm border border-blue-500 text-blue-500 rounded px-4 py-1 my-4"
+                    className="me-3 text-sm border border-blue-500 text-blue-500 rounded px-4 py-1 my-4"
                 >
                     追加
+                </Link>
+                <Link
+                    href="/admin/recipe/ai"
+                    className="text-sm border border-blue-500 text-blue-500 rounded px-4 py-1 my-4"
+                >
+                    AI作成
                 </Link>
             </div>
             <div className="my-3">

@@ -7,37 +7,31 @@ import { useLoading } from '@/app/context/LoadingContext';
 import { useRouter } from 'next/navigation';
 import IngredientList from '@/app/components/IngredientList';
 import StepList from '@/app/components/StepList';
+import RecipeDetail from '@/app/components/RecipeDetail';
 
 const PlanCreatePage: React.FC = () => {
     const router = useRouter();
-    // const { setLoading } = useLoading();
-    const listRef = useRef<HTMLDivElement>(null);
+    const { setLoading } = useLoading();
 
     const [recipe, setRecipe] = useState<Recipe>();
 
-    const onAiCreate = async (order: Order) => {
-        try {
-            const response = await axios.post('/api/ai/create', order);
-            console.log(response.data)
-            setRecipe(response.data);
-        } catch (error) {
-            console.error('Error creating recipe:', error);
-        } finally {
-            // setLoading(false);
-            if (listRef.current) {
-                listRef.current.scrollIntoView({ behavior: 'smooth' });
-            }
+    const listRef = useRef<HTMLDivElement>(null);
+
+    const onAiCreate = async (recipe: Recipe) => {
+        setRecipe(recipe);
+        if (listRef.current) {
+            listRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     };
 
     const onCancel = () => {
-        router.push('/');
+        router.push('/admin/recipe/');
     }
 
     const handleSave = async () => {
         if (!recipe) return;
         try {
-            // setLoading(true);
+            setLoading(true);
             const saveResponse = await axios.post('/api/recipe/create',
                 {
                     recipe: recipe,
@@ -51,17 +45,17 @@ const PlanCreatePage: React.FC = () => {
         } catch (error) {
             console.error('Error saving travel plan:', error);
         } finally {
-            // setLoading(false);
+            setLoading(false);
         }
     };
 
     const onSave = async () => {
-        router.push('/');
+        router.push('/admin/recipe/');
     };
 
     return (
         <div className="pb-20">
-            <h1 className="text-center text-3xl p-3">レシピクリエーター</h1>
+            <h1 className="text-center text-3xl p-3">レシピ作成</h1>
             <AiRecipeForm
                 onAiCreate={onAiCreate}
                 onCancel={onCancel}
@@ -69,11 +63,10 @@ const PlanCreatePage: React.FC = () => {
             <div ref={listRef}>
                 {recipe &&
                     <div className="my-5">
-                        <h1 className="py-5 text-3xl font-bold mb-6 text-center text-gray-800">{recipe.title}</h1>
-                        <p className="text-lg text-gray-600 mb-4">{recipe.description}</p>
-
+                        <RecipeDetail recipe={recipe} />
                         <IngredientList ingredients={recipe.ingredients} />
                         <StepList steps={recipe.steps} />
+
                         <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg py-4">
                             <div className="text-center">
                                 <button

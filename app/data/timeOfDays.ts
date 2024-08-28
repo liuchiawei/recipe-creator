@@ -1,0 +1,1 @@
+export const timeOfDays = ["朝食", "昼食", "夕食", "軽食"];

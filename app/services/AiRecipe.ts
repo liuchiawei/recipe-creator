@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GenerationConfig, GoogleGenerativeAI } from "@google/generative-ai";
 import { createPrompt } from "@/app/components/RecipeTemplate";
 import fs from 'fs';
 import path from 'path';
@@ -6,12 +6,12 @@ import path from 'path';
 const API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = 'gemini-1.5-flash';
 
-const generationConfig = {
+const generationConfig: GenerationConfig = {
     temperature: 1,  //ランダム性
     topP: 0.95,      //累積確率
     topK: 64,        //トップkトークン
     maxOutputTokens: 1024,  //最大出力トークン数
-    // responseMimeType: "application/json",
+    responseMimeType: "application/json",
 };
 
 export async function getTestRecipe() {
@@ -25,19 +25,22 @@ export async function CreateRecipe(order: Order) {
     if (!API_KEY) return;
     try {
         const genAI = new GoogleGenerativeAI(API_KEY);
+
         const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
-        model.generationConfig.maxOutputTokens = 2048;
+        model.generationConfig = generationConfig;
 
         const prompt = createPrompt(order);
         console.log(prompt)
 
         const result = await model.generateContent(prompt);
+        console.log(result);
         var json = JSON.parse(result.response.text());
 
         // Test JSON;
         // var json = await getTestRecipe();
         return json;
     } catch (error) {
+        console.log(error)
         return { error: 'Gemini request error.' };
     }
 }

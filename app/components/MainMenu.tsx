@@ -6,7 +6,7 @@ export default function MainMenu() {
             <div className="container mx-auto p-4 flex justify-between items-center">
                 <h1 className="text-xl font-bold">
                     <Link href="/">
-                        レシピアプリ
+                        レシピクリエイター
                     </Link>
                 </h1>
                 <nav className="space-x-4">
@@ -14,7 +14,7 @@ export default function MainMenu() {
                         レシピ一覧
                     </Link>
                     <Link href="/admin/recipe" className="hover:text-gray-300">
-                        レシピ一覧（管理者）
+                        レシピ作成
                     </Link>
                 </nav>
             </div>
