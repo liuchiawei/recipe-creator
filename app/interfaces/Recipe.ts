@@ -3,6 +3,7 @@ interface Recipe {
     title: string;
     description: string;
     genre: string;
+    keywords?: string;
     ingredients: Ingredient[];
     steps: Step[];
 }

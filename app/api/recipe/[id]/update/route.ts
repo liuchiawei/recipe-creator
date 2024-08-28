@@ -4,9 +4,14 @@ import prisma from '@/lib/prisma';
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
     try {
         const recipeId = Number(params.id);
-        const { title, description, ingredients, steps } = await request.json();
+        const { recipe, ingredients, steps } = await request.json();
 
-        // 既存の材料と手順を削除してから再作成する
+        console.log("Recipe:", recipe); 
+
+        if (!recipe) {
+            return NextResponse.json({ success: false, });
+        }
+
         await prisma.ingredient.deleteMany({
             where: { recipeId },
         });
@@ -15,12 +20,13 @@ export async function PUT(request: Request, { params }: { params: { id: string }
             where: { recipeId },
         });
 
-        // レシピの更新
         const updatedRecipe = await prisma.recipe.update({
             where: { id: recipeId },
             data: {
-                title,
-                description,
+                title: recipe.title,
+                description: recipe.description,
+                genre: recipe.genre,
+                keywords: recipe.keywords,
                 ingredients: {
                     create: ingredients.map((ingredient: { name: string; quantity: string }) => ({
                         name: ingredient.name,
@@ -38,7 +44,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
         return NextResponse.json({ success: true, recipe: updatedRecipe });
     } catch (error) {
-        console.error('Error updating recipe:', error);
         return NextResponse.json({ error: 'Failed to update recipe' }, { status: 500 });
     }
 }

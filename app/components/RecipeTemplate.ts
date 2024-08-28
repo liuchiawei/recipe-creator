@@ -12,6 +12,8 @@ export const TemplateJson: string = `
 {
     "title": "xxxxxxxx",
     "description": "xxxxxxxxxxxx",
+    "genre": "xxxx",
+    "keywords": "xxx,xxx,xxx,xxx",
     "ingredients": [
         {
             "name": "xxxx",

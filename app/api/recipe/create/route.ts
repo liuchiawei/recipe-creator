@@ -5,9 +5,6 @@ export async function POST(request: Request) {
     try {
         const { recipe, ingredients, steps } = await request.json();
 
-        console.log(recipe)
-        console.log(ingredients)
-        console.log(steps)
         if (!recipe) {
             return NextResponse.json({ success: false, });
         }
@@ -16,6 +13,8 @@ export async function POST(request: Request) {
             data: {
                 title: recipe.title,
                 description: recipe.description,
+                genre: recipe.genre,
+                keywords: recipe.keywords,
                 ingredients: {
                     create: ingredients.map((ingredient: { name: string; quantity: string }) => ({
                         name: ingredient.name,

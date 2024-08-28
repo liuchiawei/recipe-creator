@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import RecipeList from '@/app/components/RecipeList';
 
 export default function RecipesPage() {
     const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -20,18 +20,9 @@ export default function RecipesPage() {
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">レシピ一覧</h1>
             <div className="my-3">
-                <ul>
-                    {recipes.map((recipe) => (
-                        <li key={recipe.id} className="py-2 border-b">
-                            <Link
-                                href={`/recipe/${recipe.id}`}
-                                className="me-3 text-gray-500 px-4 py-1 my-4"
-                            >
-                                {recipe.title}
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
+                <div className="my-3">
+                    <RecipeList recipes={recipes} />
+                </div>
             </div>
         </div>
     );

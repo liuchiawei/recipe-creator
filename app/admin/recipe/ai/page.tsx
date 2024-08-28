@@ -43,7 +43,7 @@ const PlanCreatePage: React.FC = () => {
                 onSave();
             }
         } catch (error) {
-            console.error('Error saving travel plan:', error);
+            console.error('Error saving recipe:', error);
         } finally {
             setLoading(false);
         }

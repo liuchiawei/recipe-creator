@@ -28,7 +28,7 @@ const AiRecipeList: React.FC<AiRecipeListtProps> = ({ recipe, ingredients, steps
                 onSave();
             }
         } catch (error) {
-            console.error('Error saving travel plan:', error);
+            console.error('Error saving recipe:', error);
         } finally {
             setLoading(false);
         }

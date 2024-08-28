@@ -3,16 +3,19 @@
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import GenreInput from './GenreInput';
 
-const initRecipe:Recipe = {
+const initRecipe: Recipe = {
     id: 0,
     title: "",
+    genre: "",
     description: "",
+    keywords: "",
     ingredients: [],
     steps: [],
-}
+};
 
-export default function NewRecipeForm() {
+const NewRecipeForm = () => {
     const router = useRouter();
     const [recipe, setRecipe] = useState<Recipe>(initRecipe);
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -28,33 +31,39 @@ export default function NewRecipeForm() {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        console.log("name", name)
-        console.log("value:", value)
-        setRecipe(prevRecipe => {
-            return {
-                ...prevRecipe,
-                [name]: value,
-            };
-        });
+        setRecipe(prevRecipe => ({
+            ...prevRecipe,
+            [name]: value,
+        }));
+    };
+
+    const handleGenreChange = (genre: string) => {
+        setRecipe(prev => ({
+            ...prev,
+            genre,
+        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        try {
-            const response = await axios.post('/api/recipe/create', {
-                recipe,
-                ingredients,
-                steps,
-            });
-            if (response.data.success) {
-                router.push('/admin/recipe');
-            }
-        } catch (error) {
-            console.error('Error submitting the recipe:', error);
-        }
+
+        const payload = {
+            recipe: {
+                title: recipe.title,
+                description: recipe.description,
+                genre: recipe.genre,
+                keywords: recipe.keywords,
+            },
+            ingredients,
+            steps,
+        };
+
+        await axios.post(`/api/recipe/create`, payload);
+
+        router.push('/admin/recipe');
     };
 
-    const handleCancel = async (e: React.FormEvent) => {
+    const handleCancel = (e: React.FormEvent) => {
         e.preventDefault();
         router.push('/admin/recipe');
     };
@@ -72,6 +81,12 @@ export default function NewRecipeForm() {
                         value={recipe?.title}
                         onChange={handleInputChange}
                         required
+                    />
+                </div>
+                <div className="mb-4">
+                    <GenreInput
+                        value={recipe?.genre}
+                        onChange={handleGenreChange}
                     />
                 </div>
                 <div className="mb-4">
@@ -174,4 +189,6 @@ export default function NewRecipeForm() {
             </form>
         </div>
     );
-}
+};
+
+export default NewRecipeForm;

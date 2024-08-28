@@ -16,7 +16,7 @@ interface AiRecipeFormProps {
 const initOrder: Order = {
     timeOfDay: '',
     genre: '',
-    keywords: [],
+    keywords: '',
 };
 
 const AiRecipeForm = ({ onAiCreate, onCancel }: AiRecipeFormProps) => {
@@ -46,7 +46,7 @@ const AiRecipeForm = ({ onAiCreate, onCancel }: AiRecipeFormProps) => {
         }));
     };
 
-    const handleKeywordsChange = (keywords: string[]) => {
+    const handleKeywordsChange = (keywords: string) => {
         setOrder(prev => ({
             ...prev,
             keywords,
@@ -128,7 +128,7 @@ const AiRecipeForm = ({ onAiCreate, onCancel }: AiRecipeFormProps) => {
                 <div className="mb-4">
                     <label className="block text-sm font-medium mb-2">キーワード</label>
                     <KeywordInput
-                        keywords={order.keywords || []}
+                        keywords={order?.keywords}
                         onKeywordsChange={handleKeywordsChange}
                         error={errors.keywords}
                     />

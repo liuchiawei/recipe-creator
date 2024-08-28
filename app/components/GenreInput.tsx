@@ -43,6 +43,7 @@ const GenreInput: React.FC<GenreInputProps> = ({ value, onChange, error }) => {
     return (
         <div>
             <input
+                name="genre"
                 type="text"
                 value={value}
                 onChange={handleInputChange}

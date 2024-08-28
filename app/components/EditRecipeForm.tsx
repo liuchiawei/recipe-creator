@@ -3,75 +3,93 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import GenreInput from '@/app/components/GenreInput';
+import KeywordInput from '@/app/components/KeywordInput';
+import IngredientForm from '@/app/components/IngredientForm';
+import StepForm from './StepForm';
 
-interface Ingredient {
-    id?: number;
-    name: string;
-    quantity: string;
+interface EditRecipeFormProps {
+    initRecipe: Recipe;
 }
 
-interface Step {
-    id?: number;
-    instruction: string;
-}
-
-export default function EditRecipeForm({ recipeId }: { recipeId: string }) {
+const EditRecipeForm = ({ initRecipe }: EditRecipeFormProps) => {
     const router = useRouter();
-    const [recipe, setRecipe] = useState<Recipe | null>(null);
-    const [ingredients, setIngredients] = useState<Ingredient[]>([{ name: '', quantity: '' }]);
-    const [steps, setSteps] = useState<Step[]>([{ instruction: '' }]);
 
-    useEffect(() => {
-        async function fetchRecipe() {
-            const response = await axios.get(`/api/recipe/${recipeId}`);
-            if (response.data.error) {
-                router.push('/admin/recipe');
-                return;
-            }
-
-            const recipe = response.data;
-            setRecipe(recipe);
-            setIngredients(recipe.ingredients);
-            setSteps(recipe.steps);
-        }
-
-        fetchRecipe();
-    }, [router, recipeId]);
+    const [recipe, setRecipe] = useState<Recipe>(initRecipe);
+    const [ingredients, setIngredients] = useState<Ingredient[]>(initRecipe.ingredients);
+    const [steps, setSteps] = useState<Step[]>(initRecipe.steps);
 
     const addIngredient = () => {
-        setIngredients([...ingredients, { name: '', quantity: '' }]);
+        setIngredients([...ingredients, { id: 0, name: '', quantity: '' }]);
+        console.log(ingredients)
     };
 
     const addStep = () => {
-        setSteps([...steps, { instruction: '' }]);
+        setSteps([...steps, { id: 0, stepNumber: 0, instruction: '' }]);
     };
 
     const removeIngredient = (index: number) => {
         setIngredients(ingredients.filter((_, i) => i !== index));
     };
 
+    const handleIngredientChange = (index: number, name: string, quantity: string) => {
+        setIngredients(
+            ingredients.map((value, i) =>
+                i === index ? { ...value, name, quantity } : value
+            )
+        );
+    };
+
+    const handleStepChange = (index: number, instruction: string) => {
+        setSteps(
+            steps.map((value, i) =>
+                i === index ? { ...value, instruction: instruction } : value
+            )
+        )
+    }
+
     const removeStep = (index: number) => {
         setSteps(steps.filter((_, i) => i !== index));
     };
 
     const handleRecipeChange = (key: keyof Recipe, value: string) => {
-        setRecipe(prevRecipe => {
-            if (!prevRecipe) return null;
+        setRecipe(prev => {
             return {
-                ...prevRecipe,
+                ...prev,
                 [key]: value,
             };
         });
     };
 
+    const handleGenreChange = (genre: string) => {
+        setRecipe(prev => ({
+            ...prev,
+            genre: genre,
+        }));
+    };
+
+    const handleKeywordsChange = (keywords: string) => {
+        setRecipe(prev => ({
+            ...prev,
+            keywords,
+        }));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        await axios.put(`/api/recipe/${recipeId}/update`, {
-            ...recipe,
+        const payload = {
+            recipe: {
+                title: recipe.title,
+                description: recipe.description,
+                genre: recipe.genre,
+                keywords: recipe.keywords,
+            },
             ingredients,
             steps,
-        });
+        };
+
+        await axios.put(`/api/recipe/${recipe.id}/update`, payload);
 
         router.push('/admin/recipe');
     };
@@ -84,7 +102,7 @@ export default function EditRecipeForm({ recipeId }: { recipeId: string }) {
     const handleDelete = async () => {
         const confirmDelete = confirm('このレシピを削除しますか？');
         if (confirmDelete) {
-            await axios.delete(`/api/recipe/${recipeId}/delete`);
+            await axios.delete(`/api/recipe/${recipe.id}/delete`);
             router.push('/admin/recipe');
         }
     };
@@ -97,9 +115,23 @@ export default function EditRecipeForm({ recipeId }: { recipeId: string }) {
                     <input
                         type="text"
                         className="border border-gray-300 rounded p-3 w-full"
-                        value={recipe?.title || ''}
+                        value={recipe?.title}
                         onChange={(e) => handleRecipeChange('title', e.target.value)}
                         required
+                    />
+                </div>
+
+                <div className="mb-8">
+                    <GenreInput
+                        value={recipe?.genre}
+                        onChange={handleGenreChange}
+                    />
+                </div>
+
+                <div className="mb-8">
+                    <KeywordInput
+                        keywords={recipe?.keywords}
+                        onKeywordsChange={handleKeywordsChange}
                     />
                 </div>
 
@@ -113,56 +145,21 @@ export default function EditRecipeForm({ recipeId }: { recipeId: string }) {
                 </div>
 
                 <div className="mb-8">
-                    <h2 className="text-xl font-semibold text-gray-700 mb-4">材料</h2>
-                    {ingredients.map((ingredient, index) => (
-                        <div key={index} className="flex items-center mb-4">
-                            <input
-                                type="text"
-                                placeholder="材料"
-                                className="border border-gray-300 rounded p-3 w-full mr-2"
-                                value={ingredient.name}
-                                onChange={(e) =>
-                                    setIngredients(
-                                        ingredients.map((ing, i) =>
-                                            i === index ? { ...ing, name: e.target.value } : ing
-                                        )
-                                    )
-                                }
-                                required
-                            />
-                            <input
-                                type="text"
-                                placeholder="数量"
-                                className="border border-gray-300 rounded p-3 w-40 mr-2"
-                                value={ingredient.quantity}
-                                onChange={(e) =>
-                                    setIngredients(
-                                        ingredients.map((ing, i) =>
-                                            i === index ? { ...ing, quantity: e.target.value } : ing
-                                        )
-                                    )
-                                }
-                                required
-                            />
-                            <button
-                                type="button"
-                                className="text-xs text-red-500 hover:text-red-700"
-                                onClick={() => removeIngredient(index)}
-                            >
-                                削除
-                            </button>
-                        </div>
-                    ))}
-                    <button
-                        type="button"
-                        className="bg-blue-500 text-sm text-white rounded px-4 py-2"
-                        onClick={addIngredient}
-                    >
-                        材料を追加
-                    </button>
+                    <IngredientForm
+                        ingredients={ingredients}
+                        onAddIngredient={addIngredient}
+                        onRemoveIngredient={removeIngredient}
+                        onChangeIngredient={handleIngredientChange}
+                    />
                 </div>
 
                 <div className="mb-8">
+                    <StepForm
+                        steps={steps}
+                        onAddStep={addStep}
+                        onRemoveStep={removeStep}
+                        onChangeStep={handleStepChange}
+                    />
                     <h2 className="text-xl font-semibold text-gray-700 mb-4">手順</h2>
                     {steps.map((step, index) => (
                         <div key={index} className="flex items-center mb-4">
@@ -225,3 +222,5 @@ export default function EditRecipeForm({ recipeId }: { recipeId: string }) {
         </div>
     );
 }
+
+export default EditRecipeForm;

@@ -1,4 +1,5 @@
 import React from 'react';
+import { genres } from '../data/genres';
 
 interface IngredientsProps {
     ingredients: Ingredient[];
