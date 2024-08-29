@@ -27,9 +27,15 @@ export default function RecipesPage() {
                 </Link>
                 <Link
                     href="/admin/recipe/ai"
+                    className="me-3 text-sm border border-blue-500 text-blue-500 rounded px-4 py-1 my-4"
+                >
+                    AIレシピ作成
+                </Link>
+                <Link
+                    href="/admin/recipe/ai_image"
                     className="text-sm border border-blue-500 text-blue-500 rounded px-4 py-1 my-4"
                 >
-                    AI作成
+                    画像でレシピ作成
                 </Link>
             </div>
             <div className="my-3">

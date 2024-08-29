@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import IngredientList from '@/app/components/IngredientList';
 import StepList from '@/app/components/StepList';
 import RecipeDetail from '@/app/components/RecipeDetail';
-import AiRecipeForm from '@/app/components/AiRecipeForm';
+import AiImageRecipeForm from '@/app/components/AiImageRecipeForm';
 
 const PlanCreatePage: React.FC = () => {
     const router = useRouter();
@@ -18,6 +18,7 @@ const PlanCreatePage: React.FC = () => {
     const listRef = useRef<HTMLDivElement>(null);
 
     const onAiCreate = async (recipe: Recipe) => {
+        console.log('onAiCreate:', recipe)
         setRecipe(recipe);
         if (listRef.current) {
             listRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -55,8 +56,8 @@ const PlanCreatePage: React.FC = () => {
 
     return (
         <div className="pb-20">
-            <h1 className="text-center text-3xl p-3">AIレシピ作成</h1>
-            <AiRecipeForm
+            <h1 className="text-center text-3xl p-3">画像でレシピ作成</h1>
+            <AiImageRecipeForm
                 onAiCreate={onAiCreate}
                 onCancel={onCancel}
             />

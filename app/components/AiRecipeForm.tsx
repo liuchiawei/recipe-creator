@@ -6,19 +6,13 @@ import { useLoading } from '@/app/context/LoadingContext';
 import GenreInput from '@/app/components/GenreInput';
 import TimeOfDayInput from '@/app/components/TimeOfDayInput';
 import KeywordInput from '@/app/components/KeywordInput';
+import { createOrderFormData, initOrder } from '@/app/models/Order';
 
 interface AiRecipeFormProps {
     onAiCreate: (recipe: Recipe) => void;
     onCancel: () => void;
     editRecipe?: Recipe;
 }
-
-const initOrder: Order = {
-    timeOfDay: '',
-    genre: '',
-    keywords: '',
-    image: null,
-};
 
 const AiRecipeForm = ({ onAiCreate, onCancel }: AiRecipeFormProps) => {
     const { setLoading } = useLoading();
@@ -34,55 +28,49 @@ const AiRecipeForm = ({ onAiCreate, onCancel }: AiRecipeFormProps) => {
         }));
     };
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0] || null;
-        setImageFile(file);
-    };
-
     const validateForm = () => {
         const newErrors: ErrorMessages = {};
 
-        // if (!order.timeOfDay) {
-        //     newErrors.timeOfDay = '時間帯を選択してください。';
-        // }
+        if (!order.timeOfDay) {
+            newErrors.timeOfDay = '時間帯を選択してください。';
+        }
 
-        // if (!order.genre) {
-        //     newErrors.genre = 'ジャンルを選択してください。';
-        // }
+        if (!order.genre) {
+            newErrors.genre = 'ジャンルを選択してください。';
+        }
 
-        // if (order.keywords?.length === 0) {
-        //     newErrors.keywords = '1つ以上のキーワードを入力してください。';
-        // }
+        if (order.keywords?.length === 0) {
+            newErrors.keywords = '1つ以上のキーワードを入力してください。';
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    const createFormData = () => {
-        const formData = new FormData();
-        formData.append('timeOfDay', order.timeOfDay || '');
-        formData.append('genre', order.genre || '');
-        formData.append('keywords', order.keywords || '');
-        if (imageFile) {
-            formData.append('image', imageFile);
-        }
-        return formData;
-    }
     const handleAiCreate = async () => {
         if (!validateForm()) return;
         try {
             setLoading(true);
 
+            var recipe: Recipe;
             //TODO: Service
-            const response = await axios.post('/api/ai/recipe', 
-                createFormData(),
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-            console.log(response.data)
-            const recipe: Recipe = response.data;
+            if (imageFile) {
+                var data = createOrderFormData(order, imageFile);
+                const response = await axios.post('/api/ai/image_recipe',
+                    data,
+                    {
+
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    });
+                console.log(response.data)
+                recipe = response.data;
+            } else {
+                const response = await axios.post('/api/ai/recipe', order);
+                console.log(response.data)
+                recipe = response.data;
+            }
 
             if (recipe && recipe.ingredients && recipe.steps) {
                 onAiCreate(recipe);
@@ -132,17 +120,6 @@ const AiRecipeForm = ({ onAiCreate, onCancel }: AiRecipeFormProps) => {
                         keywords={order?.keywords}
                         onChange={handleInputChange}
                         error={errors.keywords}
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label className="block text-sm font-medium mb-2">画像アップロード</label>
-                    <input
-                        type="file"
-                        name="image"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
                     />
                 </div>
             </div>

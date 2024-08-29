@@ -1,59 +1,57 @@
-const { GoogleAIFileManager } = require("@google/generative-ai/server");
-
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GenerationConfig, GoogleGenerativeAI } from "@google/generative-ai";
+import { createPrompt } from "@/app/components/PromptImageRecipe";
+import fs from 'fs';
+import path from 'path';;
 
 const API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = 'gemini-1.5-flash';
 
-async function uploadToGemini(path: String, mimeType: String) {
-    const fileManager = new GoogleAIFileManager(API_KEY);
-    const uploadResult = await fileManager.uploadFile(path, {
-        mimeType,
-        displayName: path,
-    });
-    const file = uploadResult.file;
-    return file;
-}
-
-const generationConfig = {
-    temperature: 2,
-    topP: 0.95,
-    topK: 64,
-    maxOutputTokens: 1024,
-    responseMimeType: "text/plain",
+const generationConfig: GenerationConfig = {
+    temperature: 1,  //ランダム性
+    topP: 0.95,      //累積確率
+    topK: 64,        //トップkトークン
+    maxOutputTokens: 1024,  //最大出力トークン数
+    responseMimeType: "application/json",
 };
 
-async function run() {
-    if (!API_KEY) return;
-
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL, });
-    const files = [
-        await uploadToGemini("image_cook_helper1.jpeg", "image/jpeg"),
-    ];
-
-    const prompt = `写真の材料で料理のリストとレシピを作成してください。`;
-
-    const chatSession = model.startChat({
-        generationConfig,
-        history: [
-            {
-                role: "user",
-                parts: [
-                    {
-                        fileData: {
-                            mimeType: files[0].mimeType,
-                            fileUri: files[0].uri,
-                        },
-                    },
-                    { text: prompt },
-                ],
-            },
-        ],
-    });
-
-    const result = await chatSession.sendMessage("INSERT_INPUT_HERE");
-    console.log(result.response.text());
+export async function getTestRecipe() {
+    const filePath = path.resolve(process.cwd(), 'app/data/test_recipe1.json');
+    const fileContents = fs.readFileSync(filePath, 'utf8');
+    const json = JSON.parse(fileContents);
+    return json;
 }
 
-run();
+export async function CreateRecipe(imageFile: File) {
+    if (!imageFile) return;
+    if (!API_KEY) return;
+    try {
+        const arrayBuffer = await imageFile.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        const base64Image = buffer.toString('base64');
+
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+        model.generationConfig = generationConfig;
+
+        const prompt = createPrompt();
+        console.log(prompt)
+
+        const result = await model.generateContent([
+            prompt,
+            {
+                inlineData: {
+                    data: base64Image,
+                    mimeType: imageFile.type
+                }
+            }]
+        );
+
+        var json = JSON.parse(result.response.text());
+        console.log(prompt)
+        console.log(json);
+        return json;
+    } catch (error) {
+        console.log(error)
+        return { error: 'Gemini request error.' };
+    }
+}

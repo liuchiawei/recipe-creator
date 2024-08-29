@@ -30,9 +30,9 @@ export async function CreateRecipe(order: Order) {
         model.generationConfig = generationConfig;
 
         const prompt = createPrompt(order);
-        console.log(prompt)
-
         const result = await model.generateContent(prompt);
+
+        console.log(prompt)
         console.log(result);
         var json = JSON.parse(result.response.text());
 

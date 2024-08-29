@@ -1,10 +1,7 @@
 import { TemplateRecipeJSON } from "./PromptRecipeJSON";
 
-export const createPrompt = (order: Order) => {
-    var prompt = "つぎの条件で料理レシピを作成し、JSONフォーマットでレスポンス\n";
-    if (order.genre) prompt += `- ジャンル:${order.genre}\n`
-    if (order.timeOfDay) prompt += `- 時間帯:${order.timeOfDay}\n`
-    if (order.keywords) prompt += `- キーワード:${order.keywords}\n`
+export const createPrompt = () => {
+    var prompt = "画像から料理レシピを作成し、JSONフォーマットでレスポンス\n";
     prompt += TemplateRecipeJSON;
 
     return prompt;

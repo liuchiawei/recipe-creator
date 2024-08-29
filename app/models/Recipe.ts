@@ -1,5 +1,15 @@
 import prisma from "@/lib/prisma";
 
+export const initRecipe: Recipe = {
+    id: 0,
+    title: "",
+    genre: "",
+    description: "",
+    keywords: "",
+    ingredients: [],
+    steps: [],
+};
+
 export const createRecipe = async (recipe: Recipe, ingredients: Ingredient[], steps: Step[]) => {
     if (!recipe) return false;
     try {

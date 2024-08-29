@@ -3,17 +3,9 @@
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import GenreInput from './GenreInput';
-
-const initRecipe: Recipe = {
-    id: 0,
-    title: "",
-    genre: "",
-    description: "",
-    keywords: "",
-    ingredients: [],
-    steps: [],
-};
+import GenreInput from '@/app/components/GenreInput';
+import KeywordInput from '@/app/components/KeywordInput';
+import { initRecipe } from '@/app/models/Recipe';
 
 const NewRecipeForm = () => {
     const router = useRouter();
@@ -71,7 +63,7 @@ const NewRecipeForm = () => {
     };
 
     return (
-        <div className="mx-auto p-6 bg-white border rounded-lg space-y-6">
+        <div className="container mx-auto p-4 max-w-2xl">
             <h1 className="text-2xl text-center font-bold mb-4">レシピ作成</h1>
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
@@ -85,12 +77,21 @@ const NewRecipeForm = () => {
                         required
                     />
                 </div>
+                
                 <div className="mb-4">
                     <GenreInput
                         value={recipe?.genre}
                         onChange={handleRecipeChange}
                     />
                 </div>
+
+                <div className="mb-8">
+                    <KeywordInput
+                        keywords={recipe?.keywords}
+                        onChange={handleRecipeChange}
+                    />
+                </div>
+
                 <div className="mb-4">
                     <label className="block text-sm font-medium mb-2">説明</label>
                     <textarea

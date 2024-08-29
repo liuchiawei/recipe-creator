@@ -14,7 +14,7 @@ export default function StepList({ steps }: StepsProps) {
         <div className="px-5">
             <h2 className="text-xl font-semibold text-gray-700 mb-4">作り方</h2>
             <ul className="list-none space-y-2">
-                {steps.map((step) => (
+                {steps && steps.map((step) => (
                     <li key={`step-${step.stepNumber}`} className="py-3 flex items-start text-sm text-gray-700">
                         <div>
                             <span className="flex items-center justify-center w-5 h-5 text-xs text-white bg-blue-500 rounded-full mr-4">
