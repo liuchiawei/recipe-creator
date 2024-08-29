@@ -29,19 +29,21 @@ const NewRecipeForm = () => {
         setSteps([...steps, { id: 0, stepNumber: 0, instruction: '' }]);
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleInputChange = (e:any) => {
         const { name, value } = e.target;
-        setRecipe(prevRecipe => ({
-            ...prevRecipe,
+        setRecipe(prev => ({
+            ...prev,
             [name]: value,
         }));
     };
 
-    const handleGenreChange = (genre: string) => {
-        setRecipe(prev => ({
-            ...prev,
-            genre,
-        }));
+    const handleRecipeChange = (key: keyof Recipe, value: string) => {
+        setRecipe(prev => {
+            return {
+                ...prev,
+                [key]: value,
+            };
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -86,7 +88,7 @@ const NewRecipeForm = () => {
                 <div className="mb-4">
                     <GenreInput
                         value={recipe?.genre}
-                        onChange={handleGenreChange}
+                        onChange={handleRecipeChange}
                     />
                 </div>
                 <div className="mb-4">

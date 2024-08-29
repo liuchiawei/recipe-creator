@@ -5,7 +5,7 @@ import { genres } from '@/app/data/genres';
 
 interface GenreInputProps {
     value?: string;
-    onChange: (value: string) => void;
+    onChange: (key: keyof Recipe, value: string) => void;
     error?: string;
 }
 
@@ -15,7 +15,7 @@ const GenreInput: React.FC<GenreInputProps> = ({ value, onChange, error }) => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
-        onChange(newValue);
+        onChange('genre', newValue);
 
         const filtered = genres.filter((genre) =>
             genre.toLowerCase().includes(newValue.toLowerCase())
@@ -35,7 +35,7 @@ const GenreInput: React.FC<GenreInputProps> = ({ value, onChange, error }) => {
     };
 
     const handleGenreSelect = (genre: string) => {
-        onChange(genre);
+        onChange('genre', genre);
         setFilteredGenres([]);
         setIsFocused(false);
     };

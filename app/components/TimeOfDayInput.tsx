@@ -5,7 +5,7 @@ import { timeOfDays } from '@/app/data/timeOfDays';
 
 interface TimeOfDayInputProps {
     value?: string;
-    onChange: (value: string) => void;
+    onChange: (key: string, value: string) => void;
     error?: string;
 }
 
@@ -15,7 +15,7 @@ const TimeOfDayInput: React.FC<TimeOfDayInputProps> = ({ value, onChange, error 
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
-        onChange(newValue);
+        onChange('timeOfDay', newValue);
 
         const filtered = timeOfDays.filter((timeOfDays) =>
             timeOfDays.toLowerCase().includes(newValue.toLowerCase())
@@ -35,7 +35,7 @@ const TimeOfDayInput: React.FC<TimeOfDayInputProps> = ({ value, onChange, error 
     };
 
     const handleGenreSelect = (timeOfDays: string) => {
-        onChange(timeOfDays);
+        onChange('timeOfDay', timeOfDays);
         setFilteredGenres([]);
         setIsFocused(false);
     };

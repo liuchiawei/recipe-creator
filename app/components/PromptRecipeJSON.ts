@@ -1,14 +1,4 @@
-export const createPrompt = (order: Order) => {
-    var prompt = "つぎの条件で料理レシピを作成し、JSONフォーマットでレスポンス\n";
-    if (order.genre) prompt += `- ジャンル:${order.genre}\n`
-    if (order.timeOfDay) prompt += `- 時間帯:${order.timeOfDay}\n`
-    if (order.keywords) prompt += `- キーワード:${order.keywords}\n`
-    prompt += TemplateJson;
-
-    return prompt;
-}
-
-export const TemplateJson: string = `
+export const TemplateRecipeJSON: string = `
 {
     "title": "xxxxxxxx",
     "description": "xxxxxxxxxxxx",
@@ -34,5 +24,4 @@ export const TemplateJson: string = `
             "instruction": "xxxx",
         }
     ]
-}
-`;
+}`;

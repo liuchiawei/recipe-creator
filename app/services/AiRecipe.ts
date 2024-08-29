@@ -1,5 +1,5 @@
 import { GenerationConfig, GoogleGenerativeAI } from "@google/generative-ai";
-import { createPrompt } from "@/app/components/RecipeTemplate";
+import { createPrompt } from "@/app/components/PromptRecipe";
 import fs from 'fs';
 import path from 'path';
 

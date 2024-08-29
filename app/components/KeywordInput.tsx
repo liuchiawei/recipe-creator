@@ -4,11 +4,11 @@ import { useState } from "react";
 
 interface KeywordInputProps {
     keywords?: string;
-    onKeywordsChange: (keywords: string) => void;
+    onChange: (key: keyof Recipe, value: string) => void;
     error?: string;
 }
 
-const KeywordInput: React.FC<KeywordInputProps> = ({ keywords, onKeywordsChange, error }) => {
+const KeywordInput = ({ keywords, onChange, error }:KeywordInputProps) => {
     const initKeywordArray = keywords ? keywords.split(',').map((keyword) => keyword.trim()) : [];
     const [keywordArray, setKeywordArray] = useState<string[]>(initKeywordArray);
     const [inputValue, setInputValue] = useState<string>('');
@@ -18,7 +18,7 @@ const KeywordInput: React.FC<KeywordInputProps> = ({ keywords, onKeywordsChange,
         const newKeywords = keywordArray.filter((keyword) => keyword !== keywordToRemove);
         setKeywordArray(newKeywords);
         const newKeywordsString = newKeywords.join(',');
-        onKeywordsChange(newKeywordsString);
+        onChange('keywords', newKeywordsString);
     };
 
     const handleAddKeyword = () => {
@@ -26,7 +26,7 @@ const KeywordInput: React.FC<KeywordInputProps> = ({ keywords, onKeywordsChange,
             const newKeywords = [...keywordArray, inputValue.trim()];
             setKeywordArray(newKeywords);
             const newKeywordsString = newKeywords.join(',');
-            onKeywordsChange(newKeywordsString);
+            onChange('keywords', newKeywordsString);
             setInputValue(''); 
         }
     };

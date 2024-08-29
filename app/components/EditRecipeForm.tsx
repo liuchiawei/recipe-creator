@@ -61,20 +61,6 @@ const EditRecipeForm = ({ initRecipe }: EditRecipeFormProps) => {
         });
     };
 
-    const handleGenreChange = (genre: string) => {
-        setRecipe(prev => ({
-            ...prev,
-            genre: genre,
-        }));
-    };
-
-    const handleKeywordsChange = (keywords: string) => {
-        setRecipe(prev => ({
-            ...prev,
-            keywords,
-        }));
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -124,14 +110,14 @@ const EditRecipeForm = ({ initRecipe }: EditRecipeFormProps) => {
                 <div className="mb-8">
                     <GenreInput
                         value={recipe?.genre}
-                        onChange={handleGenreChange}
+                        onChange={handleRecipeChange}
                     />
                 </div>
 
                 <div className="mb-8">
                     <KeywordInput
                         keywords={recipe?.keywords}
-                        onKeywordsChange={handleKeywordsChange}
+                        onChange={handleRecipeChange}
                     />
                 </div>
 
@@ -160,38 +146,6 @@ const EditRecipeForm = ({ initRecipe }: EditRecipeFormProps) => {
                         onRemoveStep={removeStep}
                         onChangeStep={handleStepChange}
                     />
-                    <h2 className="text-xl font-semibold text-gray-700 mb-4">手順</h2>
-                    {steps.map((step, index) => (
-                        <div key={index} className="flex items-center mb-4">
-                            <textarea
-                                placeholder={`手順 ${index + 1}`}
-                                className="border border-gray-300 rounded p-3 w-full"
-                                value={step.instruction}
-                                onChange={(e) =>
-                                    setSteps(
-                                        steps.map((s, i) =>
-                                            i === index ? { ...s, instruction: e.target.value } : s
-                                        )
-                                    )
-                                }
-                                required
-                            />
-                            <button
-                                type="button"
-                                className="text-xs text-red-500 hover:text-red-700 ml-2"
-                                onClick={() => removeStep(index)}
-                            >
-                                削除
-                            </button>
-                        </div>
-                    ))}
-                    <button
-                        type="button"
-                        className="bg-blue-500 text-sm text-white rounded px-4 py-2"
-                        onClick={addStep}
-                    >
-                        手順を追加
-                    </button>
                 </div>
 
                 <div className="flex justify-between">

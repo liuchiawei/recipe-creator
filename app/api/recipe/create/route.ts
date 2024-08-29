@@ -1,36 +1,15 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { createRecipe } from '@/app/models/Recipe';
 
 export async function POST(request: Request) {
     try {
         const { recipe, ingredients, steps } = await request.json();
-
-        if (!recipe) {
-            return NextResponse.json({ success: false, });
+        const newRecipe = await createRecipe(recipe, ingredients, steps);
+        if (!newRecipe) {
+            return NextResponse.json({ success: false });
+        } else {
+            return NextResponse.json({ success: true, newRecipe });
         }
-
-        const newRecipe = await prisma.recipe.create({
-            data: {
-                title: recipe.title,
-                description: recipe.description,
-                genre: recipe.genre,
-                keywords: recipe.keywords,
-                ingredients: {
-                    create: ingredients.map((ingredient: { name: string; quantity: string }) => ({
-                        name: ingredient.name,
-                        quantity: ingredient.quantity,
-                    })),
-                },
-                steps: {
-                    create: steps.map((step: { instruction: string }, index: number) => ({
-                        stepNumber: index + 1,
-                        instruction: step.instruction,
-                    })),
-                },
-            },
-        });
-
-        return NextResponse.json({ success: true, newRecipe });
     } catch (error) {
         console.error('Error creating recipe:', error);
         return NextResponse.json({ error: 'Failed to create recipe' }, { status: 500 });

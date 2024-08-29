@@ -17,79 +17,80 @@ const initOrder: Order = {
     timeOfDay: '',
     genre: '',
     keywords: '',
+    image: null,
 };
 
 const AiRecipeForm = ({ onAiCreate, onCancel }: AiRecipeFormProps) => {
     const { setLoading } = useLoading();
+
     const [order, setOrder] = useState<Order>(initOrder);
+    const [imageFile, setImageFile] = useState<File | null>(null);
     const [errors, setErrors] = useState<ErrorMessages>({});
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
+    const handleInputChange = (key: string, value: string) => {
         setOrder(prev => ({
             ...prev,
-            [name]: value
+            [key]: value
         }));
     };
 
-    const handleGenreChange = (genre: string) => {
-        setOrder(prev => ({
-            ...prev,
-            genre,
-        }));
-    };
-
-    const handleTimeOfDay = (timeOfDay: string) => {
-        setOrder(prev => ({
-            ...prev,
-            timeOfDay,
-        }));
-    };
-
-    const handleKeywordsChange = (keywords: string) => {
-        setOrder(prev => ({
-            ...prev,
-            keywords,
-        }));
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] || null;
+        setImageFile(file);
     };
 
     const validateForm = () => {
         const newErrors: ErrorMessages = {};
 
-        if (!order.timeOfDay) {
-            newErrors.timeOfDay = '時間帯を選択してください。';
-        }
+        // if (!order.timeOfDay) {
+        //     newErrors.timeOfDay = '時間帯を選択してください。';
+        // }
 
-        if (!order.genre) {
-            newErrors.genre = 'ジャンルを選択してください。';
-        }
+        // if (!order.genre) {
+        //     newErrors.genre = 'ジャンルを選択してください。';
+        // }
 
-        if (order.keywords?.length === 0) {
-            newErrors.keywords = '1つ以上のキーワードを入力してください。';
-        }
+        // if (order.keywords?.length === 0) {
+        //     newErrors.keywords = '1つ以上のキーワードを入力してください。';
+        // }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
+    const createFormData = () => {
+        const formData = new FormData();
+        formData.append('timeOfDay', order.timeOfDay || '');
+        formData.append('genre', order.genre || '');
+        formData.append('keywords', order.keywords || '');
+        if (imageFile) {
+            formData.append('image', imageFile);
+        }
+        return formData;
+    }
     const handleAiCreate = async () => {
         if (!validateForm()) return;
         try {
             setLoading(true);
-            const response = await axios.post('/api/ai/recipe', order);
+
+            //TODO: Service
+            const response = await axios.post('/api/ai/recipe', 
+                createFormData(),
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+            console.log(response.data)
             const recipe: Recipe = response.data;
 
             if (recipe && recipe.ingredients && recipe.steps) {
                 onAiCreate(recipe);
             } else {
-                const newErrors: ErrorMessages = {};
-                newErrors.general = "レシピの作成に失敗しました。";
-                setErrors(newErrors);
+                setErrors({ general: "レシピの作成に失敗しました。" });
             }
         } catch (error) {
-            const newErrors: ErrorMessages = {};
-            newErrors.general = "サーバーエラーが発生しました。";
-            setErrors(newErrors);
+            setErrors({ general: "サーバーエラーが発生しました。" });
         } finally {
             setLoading(false);
         }
@@ -112,7 +113,7 @@ const AiRecipeForm = ({ onAiCreate, onCancel }: AiRecipeFormProps) => {
                     <label className="block text-sm font-medium mb-2">ジャンル</label>
                     <GenreInput
                         value={order.genre}
-                        onChange={handleGenreChange}
+                        onChange={handleInputChange}
                         error={errors.genre}
                     />
                 </div>
@@ -120,7 +121,7 @@ const AiRecipeForm = ({ onAiCreate, onCancel }: AiRecipeFormProps) => {
                     <label className="block text-sm font-medium mb-2">時間帯</label>
                     <TimeOfDayInput
                         value={order.timeOfDay}
-                        onChange={handleTimeOfDay}
+                        onChange={handleInputChange}
                         error={errors.timeOfDay}
                     />
                 </div>
@@ -129,8 +130,19 @@ const AiRecipeForm = ({ onAiCreate, onCancel }: AiRecipeFormProps) => {
                     <label className="block text-sm font-medium mb-2">キーワード</label>
                     <KeywordInput
                         keywords={order?.keywords}
-                        onKeywordsChange={handleKeywordsChange}
+                        onChange={handleInputChange}
                         error={errors.keywords}
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label className="block text-sm font-medium mb-2">画像アップロード</label>
+                    <input
+                        type="file"
+                        name="image"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
                     />
                 </div>
             </div>
