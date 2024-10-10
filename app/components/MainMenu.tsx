@@ -13,7 +13,7 @@ export default function MainMenu() {
                     <Link href="/recipe" className="hover:text-gray-300">
                         レシピ一覧
                     </Link>
-                    <Link href="/admin/recipe" className="hover:text-gray-300">
+                    <Link href="/user/recipe" className="hover:text-gray-300">
                         レシピ作成
                     </Link>
                 </nav>

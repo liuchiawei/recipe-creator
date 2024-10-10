@@ -54,12 +54,12 @@ const NewRecipeForm = () => {
 
         await axios.post(`/api/recipe/create`, payload);
 
-        router.push('/admin/recipe');
+        router.push('/user/recipe');
     };
 
     const handleCancel = (e: React.FormEvent) => {
         e.preventDefault();
-        router.push('/admin/recipe');
+        router.push('/user/recipe');
     };
 
     return (

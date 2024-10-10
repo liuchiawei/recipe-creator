@@ -77,19 +77,19 @@ const EditRecipeForm = ({ initRecipe }: EditRecipeFormProps) => {
 
         await axios.put(`/api/recipe/${recipe.id}/update`, payload);
 
-        router.push('/admin/recipe');
+        router.push('/user/recipe');
     };
 
     const handleCancel = (e: React.FormEvent) => {
         e.preventDefault();
-        router.push('/admin/recipe');
+        router.push('/user/recipe');
     };
 
     const handleDelete = async () => {
         const confirmDelete = confirm('このレシピを削除しますか？');
         if (confirmDelete) {
             await axios.delete(`/api/recipe/${recipe.id}/delete`);
-            router.push('/admin/recipe');
+            router.push('/user/recipe');
         }
     };
 

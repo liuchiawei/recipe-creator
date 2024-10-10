@@ -15,7 +15,7 @@ export default function EditRecipePage({ params }: { params: { id: string } }) {
         async function fetchRecipe() {
             const response = await axios.get(`/api/recipe/${params.id}`);
             if (response.data.error) {
-                router.push('/admin/recipe');
+                router.push('/user/recipe');
                 return;
             }
             const recipe = response.data;

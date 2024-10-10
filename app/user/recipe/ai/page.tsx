@@ -25,7 +25,7 @@ const PlanCreatePage: React.FC = () => {
     };
 
     const onCancel = () => {
-        router.push('/admin/recipe/');
+        router.push('/user/recipe/');
     }
 
     const handleSave = async () => {
@@ -50,7 +50,7 @@ const PlanCreatePage: React.FC = () => {
     };
 
     const onSave = async () => {
-        router.push('/admin/recipe/');
+        router.push('/user/recipe/');
     };
 
     return (
